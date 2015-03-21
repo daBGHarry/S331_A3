@@ -67,4 +67,6 @@ transition(idle, error_diagnosis, idle_crash, null, 'broadcast idle_err_msg').
 transition(monitoring, error_diagnosis, monitor_crash, not(inlockdown), 'broadcast idle_err_msg').
 transition(error_diagnosis, init, retry_init, 'retry < 3', 'retry++').
 transition(error_diagnosis, idle, idle_rescue, null, null).
-transition(error_diagnosis, monitoring, null, null, null).
+transition(error_diagnosis, monitoring, moni_rescue, null, null).
+transition(error_diagnosis, safe_shutdown, shutdown, 'retry >= 3', 'system clean up').
+transition(safe_shutdown,dormant,sleep,null,null).
