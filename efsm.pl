@@ -1,5 +1,5 @@
 %% Top level states
-state(exit).
+
 state(init).
 state(idle).
 state(monitoring).
@@ -36,6 +36,11 @@ initial_state(boot_hw, init).
 initial_state(monidle, monitor).
 initial_state(error_rcv, error_diagnosis).
 initial_state(prep_vpurge, lockdown).
+
+%% Final states
+final(exit, null).
+final(lock_exit, lockdown).
+final(err_exit, error_diagnosis).
 
 %% Superstates
 superstate(init, ).
