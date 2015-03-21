@@ -104,9 +104,33 @@ transition(error_rcv, reset_module_data, null, no err_protocol_def, null).
 transition(applicable_rescue, exit, apply_protocol_rescues, null, null).
 transition(reset_module_data, exit, reset_to_stable, null, null).
 
-%% ============================================================================= %% Rules %% =============================================================================
+%% =============================================================================
+%%                                Rules
+%% =============================================================================
 
-all_loops(Set):- findall(Edge, 
+%% 1. is loop(Event, Guard) succeeds by finding a loop edge. We assume that an edge can be represented by a non-null event-guard pair.
+is_loop(Event, Guard):- transition(X, X, Event, Guard, _).
+
+%% 2. 
+all_loops(Set):- findall(Edge,
+
+%% 3. is edge(Event, Guard) succeeds by finding an edge.
+is_edge(Event, Guard):- transition(_, _, Event, Guard, _).
+
+%% 5. is link(Event, Guard) succeeds by finding a link edge.
+
+%% 7. ancestor(Ancestor, Descendant) is a utility rule that succeeds by returning an ancestor to a given state.
+
+%% 9. all states(L) succeeds by returning a list of all states.
+
+%% 11. get starting state(State) succeeds by returning the top-level starting state.
+
+%% 13. graph is reflexive succeeds if the entire EFSM is reflexive.
+
+%% 15. get events(Ret) succeeds by returning a set of all events.
+
+%% 17. get only guarded(Ret) succeeds by returning state pairs that are associated by guards only.
+ 
 
 
 
