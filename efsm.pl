@@ -82,25 +82,25 @@ transition(senchk, tchk, senok, null, null).
 transition(tchk, psichk, t_ok, null, null).
 transition(psichk, ready, psi_ok, null, null).
 
-%% Transiton within monitor
+%% Transitons within monitor
 transition(monidle, monidle, null, null, 'check contagion').
 transition(monidle, regulate_environment, no_contagion, null, null).
 transition(monidle, lockdown, contagion_alert, null, 'broadcast FACILITY_CRIT_MESG and lockdown = true').
 transition(regulate_environment, monidle, after_100ms, 'after(100ms)', null).															%% diamond??????
 transition(lockdown, monidle, purge_succ, null, 'lockdown = false').
 
-%% Transition within lockdown
+%% Transitions within lockdown
 transition(prep_vpurge, alt_temp, initiate_purge, null, 'lock doors').
 transition(prep_vpurge, alt_psi, initiate_purge, null, 'lock doors').
 transition(alt_temp, risk_assess, tcyc_comp, null, null).
 transition(alt_psi, risk_assess, psicyc_comp, null, null).
-transition(risk_assess, safe_status, null, 'risk < 1%', 'unlock_doors'). 
+transition(risk_assess, safe_status, null, 'risk < 1%', unlock_doors). 
 transition(risk_assess, prep_vpurge, null, 'risk >= 1%', null).
 transition(safe_status, exit, null, null, null).
 
-%% Transition within error_diagnosis
-transition(error_rcv, applicable_rescue, null, 'err_protocol_def', null).
-transition(error_rcv, reset_module_data, null, 'no err_protocol_def', null).
+%% Transitions within error_diagnosis
+transition(error_rcv, applicable_rescue, null, err_protocol_def, null).
+transition(error_rcv, reset_module_data, null, no err_protocol_def, null).
 transition(applicable_rescue, exit, apply_protocol_rescues, null, null).
 transition(reset_module_data, exit, reset_to_stable, null, null).
 
