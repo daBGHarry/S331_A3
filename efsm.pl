@@ -104,9 +104,9 @@ transition(error_rcv, reset_module_data, null, no err_protocol_def, null).
 transition(applicable_rescue, exit, apply_protocol_rescues, null, null).
 transition(reset_module_data, exit, reset_to_stable, null, null).
 
+%% ============================================================================= %% Rules %% =============================================================================
 
-
-
+all_loops(Set):- findall(Edge, 
 
 
 
