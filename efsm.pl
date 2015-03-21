@@ -38,22 +38,22 @@ initial_state(error_rcv, error_diagnosis).
 initial_state(prep_vpurge, lockdown).
 
 %% Superstates
-superstate(init, ).
-superstate(init, ).
-superstate(init, ).
-superstate(init, ).
-superstate(init, ).
-superstate(monitor, ).
-superstate(monitor, ).
-superstate(monitor, ).
-superstate(error_diagnosis, ).
-superstate(error_diagnosis, ).
-superstate(error_diagnosis, ).
-superstate(lockdown, ).
-superstate(lockdown, ).
-superstate(lockdown, ).
-superstate(lockdown, ).
-superstate(lockdown, ).
+superstate(init, boot_hw).
+superstate(init, senchk).
+superstate(init, tchk).
+superstate(init, psichk).
+superstate(init, ready).
+superstate(monitor, monidle).
+superstate(monitor, regulate_environment).
+superstate(monitor, lockdown).
+superstate(error_diagnosis, error_rcv).
+superstate(error_diagnosis, applicable_rescue).
+superstate(error_diagnosis, reset_module_data).
+superstate(lockdown, prep_vpurge).
+superstate(lockdown, alt_temp).
+superstate(lockdown, alt_psi).
+superstate(lockdown, risk_assess).
+superstate(lockdown, safe_status).
 
 %% transition(source, destination, event, guard, action).
 
