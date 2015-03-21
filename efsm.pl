@@ -43,22 +43,22 @@ final(lock_exit, lockdown).
 final(err_exit, error_diagnosis).
 
 %% Superstates
-superstate(init, ).
-superstate(init, ).
-superstate(init, ).
-superstate(init, ).
-superstate(init, ).
-superstate(monitor, ).
-superstate(monitor, ).
-superstate(monitor, ).
-superstate(error_diagnosis, ).
-superstate(error_diagnosis, ).
-superstate(error_diagnosis, ).
-superstate(lockdown, ).
-superstate(lockdown, ).
-superstate(lockdown, ).
-superstate(lockdown, ).
-superstate(lockdown, ).
+superstate(init, boot_hw).
+superstate(init, senchk).
+superstate(init, tchk).
+superstate(init, psichk).
+superstate(init, ready).
+superstate(monitor, monidle).
+superstate(monitor, regulate_environment).
+superstate(monitor, lockdown).
+superstate(error_diagnosis, error_rcv).
+superstate(error_diagnosis, applicable_rescue).
+superstate(error_diagnosis, reset_module_data).
+superstate(lockdown, prep_vpurge).
+superstate(lockdown, alt_temp).
+superstate(lockdown, alt_psi).
+superstate(lockdown, risk_assess).
+superstate(lockdown, safe_status).
 
 %% transition(source, destination, event, guard, action).
 
@@ -72,4 +72,48 @@ transition(idle, error_diagnosis, idle_crash, null, 'broadcast idle_err_msg').
 transition(monitoring, error_diagnosis, monitor_crash, not(inlockdown), 'broadcast idle_err_msg').
 transition(error_diagnosis, init, retry_init, 'retry < 3', 'retry++').
 transition(error_diagnosis, idle, idle_rescue, null, null).
-transition(error_diagnosis, monitoring, null, null, null).
+transition(error_diagnosis, monitoring, moni_rescue, null, null).
+transition(error_diagnosis, safe_shutdown, shutdown, 'retry >= 3', 'system clean up').
+transition(safe_shutdown,dormant,sleep,null,null).
+
+%% Transitions within init state
+transition(boot_hw, senchk, hw_ok, null, null).
+transition(senchk, tchk, senok, null, null).
+transition(tchk, psichk, t_ok, null, null).
+transition(psichk, ready, psi_ok, null, null).
+
+%% Transiton within monitor
+transition(monidle, monidle, null, null, 'check contagion').
+transition(monidle, regulate_environment, no_contagion, null, null).
+transition(monidle, lockdown, contagion_alert, null, 'broadcast FACILITY_CRIT_MESG and lockdown = true').
+transition(regulate_environment, monidle, after_100ms, 'after(100ms)', null).															%% diamond??????
+transition(lockdown, monidle, purge_succ, null, 'lockdown = false').
+
+%% Transition within lockdown
+transition(prep_vpurge, alt_temp, initiate_purge, null, 'lock doors').
+transition(prep_vpurge, alt_psi, initiate_purge, null, 'lock doors').
+transition(alt_temp, risk_assess, tcyc_comp, null, null).
+transition(alt_psi, risk_assess, psicyc_comp, null, null).
+transition(risk_assess, safe_status, null, 'risk < 1%', 'unlock_doors'). 
+transition(risk_assess, prep_vpurge, null, 'risk >= 1%', null).
+transition(safe_status, exit, null, null, null).
+
+%% Transition within error_diagnosis
+transition(error_rcv, applicable_rescue, null, 'err_protocol_def', null).
+transition(error_rcv, reset_module_data, null, 'no err_protocol_def', null).
+transition(applicable_rescue, exit, apply_protocol_rescues, null, null).
+transition(reset_module_data, exit, reset_to_stable, null, null).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
