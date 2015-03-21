@@ -18,16 +18,24 @@ state(monidle).
 state(regulate_environment).
 state(lockdown).
 
-%% State under error_diagnosis state
+%% States under error_diagnosis state
 state(error_rcv).
 state(applicable_rescue).
 state(reset_module_data).
+
+%% States under lockdown state
+state(prep_vpurge).
+state(alt_temp).
+state(alt_psi).
+state(risk_assess).
+state(safe_status).
 
 %% Initial states
 initial_state(dormant, null).
 initial_state(boot_hw, init).
 initial_state(monidle, monitor).
 initial_state(error_rcv, error_diagnosis).
+initial_state(prep_vpurge, lockdown).
 
 %% Superstates
 superstate(init, ).
@@ -41,6 +49,11 @@ superstate(monitor, ).
 superstate(error_diagnosis, ).
 superstate(error_diagnosis, ).
 superstate(error_diagnosis, ).
+superstate(lockdown, ).
+superstate(lockdown, ).
+superstate(lockdown, ).
+superstate(lockdown, ).
+superstate(lockdown, ).
 
 %% transition(source, destination, event, guard, action).
 
