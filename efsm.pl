@@ -86,7 +86,7 @@ transition(psichk, ready, psi_ok, null, null).
 transition(monidle, monidle, null, null, 'check contagion').
 transition(monidle, regulate_environment, no_contagion, null, null).
 transition(monidle, lockdown, contagion_alert, null, 'broadcast FACILITY_CRIT_MESG and lockdown = true').
-transition(regulate_environment, monidle, after_100ms, 'after(100ms)', null).															%% diamond??????
+transition(regulate_environment, monidle, after_100ms, null, null).
 transition(lockdown, monidle, purge_succ, null, 'lockdown = false').
 
 %% Transitions within lockdown
