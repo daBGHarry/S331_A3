@@ -108,47 +108,66 @@ transition(reset_module_data, exit, reset_to_stable, null, null).
 %%                                Rules
 %% =============================================================================
 
-%% 1. is loop(Event, Guard) succeeds by finding a loop edge. We assume that an edge can be represented by a non-null event-guard pair.
+%% 1. is_loop(Event, Guard) succeeds by finding a loop edge. We assume that an edge can be represented by a non-null event-guard pair.
 is_loop(Event,Guard):- transition(X,X,Event,Guard,_).
 
-%% 2. 
-all_loops(Set):- findall(Edge,
+%% 2. all_loops(Set) succeeds by returning a set of all loop edges.
+all_loops(Set):- findall([Event, Guard], is_loop(Event, Guard), List), list_to_set(List,Set).
 
-%% 3. is edge(Event, Guard) succeeds by finding an edge.
+%% 3. is_edge(Event, Guard) succeeds by finding an edge.
 is_edge(Event,Guard):- transition(_,_,Event,Guard,_).
 
-%% 5. is link(Event, Guard) succeeds by finding a link edge.
+%% 4. size(Length) succeeds by returning the size of the entire EFSM (given by the number of its edges).
+size(Length) :- findall([Event, Guard], is_edge(Event, Guard), List), length(List).
+
+%% 5. is_link(Event, Guard) succeeds by finding a link edge.
 is_link(Event,Guard) :- 															%% ** WTF is a link edge????????
+
+%% 6. Rule all superstates(Set) succeeds by ﬁnding all superstates in the EFSM.
+all_superstates(Set) :- findall(States, (state(States), superstate(States, _)), List), list_to_set(List, Set).
 
 %% 7. ancestor(Ancestor,Descendant) is a utility rule that succeeds by returning an ancestor to a given state. 	%% ** are we trying to prove that descendant has ancestor? or find ancestor to descendant?????
 ancestor(Ancestor, Descendant) :- transition(Ancestor, Descendant,_,_,_). %% returns the ancestor to the state Descendant
 %% ** ancestor(Ancestor, Descendant) :- transition(Ancestor,Descendant,_,_,_).
 %% ** ancestor(Ancestor, Descendant) :- transition(Ancestor,X,_,_,_), ancestor(X, Descendant).
 
+%% 8. inherits_transitions(State, List) succeeds by returning all transitions inherited by a given state.
+inherits_transitions(State, List) :- findall(transition(State, Anothersuperstate, _, _, _), superstate(Superstate, State), List).
+
 %% 9. all states(L) succeeds by returning a list of all states.
 states(L) :- findall(X,state(X),L). %% returns a list of all states in EFSM
+
+%% 10. all_init_states(L) succeeds by returning a list of all starting states.
+all_init_states(L) :- findall(State, initial_state(State, _), L).
 
 %% 11. get starting state(State) succeeds by returning the top-level starting state.
 get_starting_state(State) :- initial_state(State,null).	%% if state is initial state
 get_starting_state(State) :- superstate(X,State), get_starting_state(X). %% if state is in lower level states, find the intial state of its superstate
 get_starting_state(State) :- get_starting_state(ancestor(Ancestor, State)). %% if state has ancestor, see if the ancestor is the initial state
 
-%% 13. graph is reflexive succeeds if the entire EFSM is reflexive.	%% ** Every state is reflexive???
+%% 12. state_is_reflexive(State) succeeds if State is reﬂexive. %% What the hell is reflexive?
+
+
+%% 13. graph_is_reflexive succeeds if the entire EFSM is reflexive.	%% ** Every state is reflexive???
 graph_is_reflexive :- list_is_reflexive(states(L)).
 list_is_reflexive([H]) :- transition(H,H,_,_,_).	%% base case
 list_is_reflexive([H|T]) :- transition(H,H,_,_,_), list_is_reflexive(T). %% iterates through list of all states and checks if they are all reflexive
 
-%% 15. get events(Ret) succeeds by returning a set of all events.
+%% 14. get_guards(Ret) succeeds by returning a set of all guards.
+get_guards(Ret) :- findall(Guard, transition(_, _, _, Guard, _), List), list_to_set(List, Ret).
+
+%% 15. get_events(Ret) succeeds by returning a set of all events.
 get_events(Ret) :- findall(Event, transition(_,_,Event,_,_),L),list_to_set(L,Ret).
 
-%% 17. get only guarded(Ret) succeeds by returning state pairs that are associated by guards only.
+%% 16 get_actions(Ret) succeeds by returning a set of all actions.
+get_actions(Ret) :- findall(Action, transition(_, _, _, _, Action), List), list_to_set(List, Ret).
+
+%% 17. get_only_guarded(Ret) succeeds by returning state pairs that are associated by guards only.
 get_only_guarded(Ret) :- findall([Ancestor,Descendant|[]],transition(Ancestor,Descendant,_,null,null),Ret).
 
-
-
-
-
-
+%% 18. legal_events_of(State, L) succeeds by returning all legal event-guard pairs.
+legal_events_of(State, L) :- findall([Event, Guard], transition(State, _, Event, Guard, _), L).
+legal_events_of(State, L) :- findall([Event, Guard], transition(_, State, Event, Guard, _), L).
 
 
 
