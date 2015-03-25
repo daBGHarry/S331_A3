@@ -1,3 +1,5 @@
+%% ** MUST SEPERATE THIS FILE INTO FACTS AND RULES FILES
+
 %% Top level states
 
 state(init).
@@ -64,7 +66,7 @@ superstate(lockdown, safe_status).
 
 %% Transitions within top level
 transition(dormant, exit, kill, null, null).
-transition(dormant, init, start, null, 'load drivers').
+transition(dormant, init, start, null, 'system boot and load drivers').
 transition(init, idle, init_ok, null, null).
 transition(init, error_diagnosis, init_crash, null, 'broadcast init_err_msg').
 transition(idle, monitoring, begin_monitoring, null, null).
@@ -83,7 +85,7 @@ transition(tchk, psichk, t_ok, null, null).
 transition(psichk, ready, psi_ok, null, null).
 
 %% Transitons within monitor
-transition(monidle, monidle, null, null, 'check contagion').
+transition(monidle, monidle, null, is_contagion, null).								%% still need to check if this transition is necessary
 transition(monidle, regulate_environment, no_contagion, null, null).
 transition(monidle, lockdown, contagion_alert, null, 'broadcast FACILITY_CRIT_MESG and lockdown = true').
 transition(regulate_environment, monidle, after_100ms, null, null).
@@ -127,42 +129,52 @@ is_link(Event,Guard) :- 															%% ** WTF is a link edge????????
 all_superstates(Set) :- findall(States, (state(States), superstate(States, _)), List), list_to_set(List, Set).
 
 %% 7. ancestor(Ancestor,Descendant) is a utility rule that succeeds by returning an ancestor to a given state. 	%% ** are we trying to prove that descendant has ancestor? or find ancestor to descendant?????
-ancestor(Ancestor, Descendant) :- transition(Ancestor, Descendant,_,_,_). %% returns the ancestor to the state Descendant
-%% ** ancestor(Ancestor, Descendant) :- transition(Ancestor,Descendant,_,_,_).
-%% ** ancestor(Ancestor, Descendant) :- transition(Ancestor,X,_,_,_), ancestor(X, Descendant).
+%% returns the ancestor to the state Descendant
+ancestor(Ancestor, Descendant) :- superstate(Ancestor, Descendant). 
+%% returns null if descendant has no ancestor
+ancestor(Ancestor, Descendant) :- Ancestor is null. 
 
 %% 8. inherits_transitions(State, List) succeeds by returning all transitions inherited by a given state.
 inherits_transitions(State, List) :- findall(transition(State, Anothersuperstate, _, _, _), superstate(Superstate, State), List).
 
 %% 9. all states(L) succeeds by returning a list of all states.
-states(L) :- findall(X,state(X),L). %% returns a list of all states in EFSM
+%% returns a list of all states in EFSM
+states(L) :- findall(X,state(X),L). 
 
 %% 10. all_init_states(L) succeeds by returning a list of all starting states.
 all_init_states(L) :- findall(State, initial_state(State, _), L).
 
 %% 11. get starting state(State) succeeds by returning the top-level starting state.
-get_starting_state(State) :- initial_state(State,null).	%% if state is initial state
-get_starting_state(State) :- superstate(X,State), get_starting_state(X). %% if state is in lower level states, find the intial state of its superstate
-get_starting_state(State) :- get_starting_state(ancestor(Ancestor, State)). %% if state has ancestor, see if the ancestor is the initial state
+%% if state is initial state
+get_starting_state(State) :- initial_state(State,null).	
+%% if state is in lower level states, find the intial state of its superstate
+get_starting_state(State) :- superstate(X,State), get_starting_state(X). 
+%% if state has ancestor, see if the ancestor is the initial state
+get_starting_state(State) :- get_starting_state(ancestor(Ancestor, State)). 
 
-%% 12. state_is_reflexive(State) succeeds if State is reﬂexive. %% What the hell is reflexive?
+%% 12. state_is_reflexive(State) succeeds if State is reﬂexive. %% ** What the hell is reflexive?
 
 
 %% 13. graph_is_reflexive succeeds if the entire EFSM is reflexive.	%% ** Every state is reflexive???
-graph_is_reflexive :- list_is_reflexive(states(L)).
-list_is_reflexive([H]) :- transition(H,H,_,_,_).	%% base case
-list_is_reflexive([H|T]) :- transition(H,H,_,_,_), list_is_reflexive(T). %% iterates through list of all states and checks if they are all reflexive
+%% graph_is_reflexive succeeds if every state is reflexive
+graph_is_reflexive :- list_of_states_is_reflexive(states(L)).
+%% base case
+list_of_states_is_reflexive([H]) :- transition(H,H,_,_,_).	
+%% iterates through list of all states and checks if they are all reflexive
+list_of_states_is_reflexive([H|T]) :- transition(H,H,_,_,_), list_of_states_is_reflexive(T). 
 
 %% 14. get_guards(Ret) succeeds by returning a set of all guards.
 get_guards(Ret) :- findall(Guard, transition(_, _, _, Guard, _), List), list_to_set(List, Ret).
 
 %% 15. get_events(Ret) succeeds by returning a set of all events.
+%% finds all events from the transitions and adds them to a set
 get_events(Ret) :- findall(Event, transition(_,_,Event,_,_),L),list_to_set(L,Ret).
 
 %% 16 get_actions(Ret) succeeds by returning a set of all actions.
 get_actions(Ret) :- findall(Action, transition(_, _, _, _, Action), List), list_to_set(List, Ret).
 
 %% 17. get_only_guarded(Ret) succeeds by returning state pairs that are associated by guards only.
+%% finds all the state pairs associated with guards only and inserts them by pairs in a nested list
 get_only_guarded(Ret) :- findall([Ancestor,Descendant|[]],transition(Ancestor,Descendant,_,null,null),Ret).
 
 %% 18. legal_events_of(State, L) succeeds by returning all legal event-guard pairs.
