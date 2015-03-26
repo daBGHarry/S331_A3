@@ -153,15 +153,18 @@ get_starting_state(State) :- superstate(X,State), get_starting_state(X).
 get_starting_state(State) :- get_starting_state(ancestor(Ancestor, State)). 
 
 %% 12. state_is_reflexive(State) succeeds if State is reﬂexive. %% ** What the hell is reflexive?
-
+state_is_reflexive(State) :- transition(State, State, _, _, _).
 
 %% 13. graph_is_reflexive succeeds if the entire EFSM is reflexive.	%% ** Every state is reflexive???
 %% graph_is_reflexive succeeds if every state is reflexive
-graph_is_reflexive :- list_of_states_is_reflexive(states(L)).
+
+%% Get all the states in a list. Get all reflexive states in a list. Compare length of lists. If they're the same, then the graph is reflexive. 
+graph_is_reflexive :- all_states(States), findall(ReflexiveState, state_is_reflexive(ReflexiveState), ReflexiveStates), length(States) == length(ReflexiveStates).
+
 %% base case
-list_of_states_is_reflexive([H]) :- transition(H,H,_,_,_).	
+%% graph_is_reflexive([H]) :- transition(H,H,_,_,_).	
 %% iterates through list of all states and checks if they are all reflexive
-list_of_states_is_reflexive([H|T]) :- transition(H,H,_,_,_), list_of_states_is_reflexive(T). 
+%% graph_is_reflexive([H|T]) :- transition(H,H,_,_,_), graph_is_reflexive(T). 
 
 %% 14. get_guards(Ret) succeeds by returning a set of all guards.
 get_guards(Ret) :- findall(Guard, transition(_, _, _, Guard, _), List), list_to_set(List, Ret).
