@@ -185,7 +185,7 @@ get_only_guarded(Ret) :- findall([Ancestor,Descendant|[]],transition(Ancestor,De
 
 %% 18. legal_events_of(State, L) succeeds by returning all legal event-guard pairs.
 legal_events_of(State, L) :- findall([Event, Guard], transition(State, _, Event, Guard, _), L).
-legal_events_of(State, L) :- findall([Event, Guard], transition(_, State, Event, Guard, _), L).
+%% legal_events_of(State, L) :- findall([Event, Guard], transition(_, State, Event, Guard, _), L).   APPARENTLY THIS ONE SHOULD BE REMOVED
 
 
 
