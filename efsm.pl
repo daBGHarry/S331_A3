@@ -128,7 +128,7 @@ is_link(Event,Guard) :- transition(_, _, Event, Guard, _).
 %% 6. Rule all superstates(Set) succeeds by ﬁnding all superstates in the EFSM.
 all_superstates(Set) :- findall(States, (state(States), superstate(States, _)), List), list_to_set(List, Set).
 
-%% 7. ancestor(Ancestor,Descendant) is a utility rule that succeeds by returning an ancestor to a given state. 	%% ** are we trying to prove that descendant has ancestor? or find ancestor to descendant?????
+%% 7. ancestor(Ancestor,Descendant) is a utility rule that succeeds by returning an ancestor to a given state.
 %% returns the ancestor to the state Descendant
 ancestor(Ancestor, Descendant) :- superstate(Ancestor, Descendant). 
 %% returns null if descendant has no ancestor
@@ -159,9 +159,11 @@ state_is_reflexive(State) :- transition(State, State, _, _, _).
 %% graph_is_reflexive succeeds if every state is reflexive
 
 %% Get all the states in a list. Get all reflexive states in a list. Compare length of lists. If they're the same, then the graph is reflexive. 
-graph_is_reflexive :- all_states(States), findall(ReflexiveState, state_is_reflexive(ReflexiveState), ReflexiveStates), length(States) == length(ReflexiveStates).
+graph_is_reflexive :- all_states(States), findall(ReflexiveState, (state(ReflexiveState), state_is_reflexive(ReflexiveState)), ReflexiveStates), length(States) == length(ReflexiveStates).
 
-%% I want to do this recursively, but I don't think it's going to work...
+%% I want to do this recursively, but I don't think it's going to work unless the rule takes a parameter as you've said...
+%% The requirements don' specify a parameter, but I guess we could just add it since it will simplify the complexity.
+
 %% base case
 %% graph_is_reflexive([H]) :- is_loop(H).	
 %% iterates through list of all states and checks if they are all reflexive
