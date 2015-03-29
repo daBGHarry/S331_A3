@@ -2,7 +2,7 @@
 
 state(init).
 state(idle).
-state(monitoring).
+state(monitor).
 state(error_diagnosis).
 state(safe_shutdown).
 
