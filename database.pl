@@ -45,7 +45,7 @@ final(err_exit, error_diagnosis).
 %% Superstates
 superstate(null, init).
 superstate(null, idle).
-superstate(null, monitoring).
+superstate(null, monitor).
 superstate(null, error_diagnosis).
 superstate(null, safe_shutdown).
 superstate(init, boot_hw).
@@ -72,12 +72,12 @@ transition(dormant, exit, kill, null, null).
 transition(dormant, init, start, null, 'system boot and load drivers').
 transition(init, idle, init_ok, null, null).
 transition(init, error_diagnosis, init_crash, null, 'broadcast init_err_msg').
-transition(idle, monitoring, begin_monitoring, null, null).
+transition(idle, monitor, begin_monitoring, null, null).
 transition(idle, error_diagnosis, idle_crash, null, 'broadcast idle_err_msg').
-transition(monitoring, error_diagnosis, monitor_crash, not(inlockdown), 'broadcast idle_err_msg').
+transition(monitor, error_diagnosis, monitor_crash, not(inlockdown), 'broadcast idle_err_msg').
 transition(error_diagnosis, init, retry_init, 'retry < 3', 'retry++').
 transition(error_diagnosis, idle, idle_rescue, null, null).
-transition(error_diagnosis, monitoring, moni_rescue, null, null).
+transition(error_diagnosis, monitor, moni_rescue, null, null).
 transition(error_diagnosis, safe_shutdown, shutdown, 'retry >= 3', 'system clean up').
 transition(safe_shutdown,dormant,sleep,null,null).
 
