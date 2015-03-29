@@ -13,7 +13,7 @@ state(tchk).
 state(psichk).
 state(ready).
 
-%% States under monitor state
+%% States under monitoring state
 state(monidle).
 state(regulate_environment).
 state(lockdown).
@@ -33,7 +33,7 @@ state(safe_status).
 %% Initial states
 initial_state(dormant, null).
 initial_state(boot_hw, init).
-initial_state(monidle, monitor).
+initial_state(monidle, monitoring).
 initial_state(error_rcv, error_diagnosis).
 initial_state(prep_vpurge, lockdown).
 
@@ -53,9 +53,9 @@ superstate(init, senchk).
 superstate(init, tchk).
 superstate(init, psichk).
 superstate(init, ready).
-superstate(monitor, monidle).
-superstate(monitor, regulate_environment).
-superstate(monitor, lockdown).
+superstate(monitoring, monidle).
+superstate(monitoring, regulate_environment).
+superstate(monitoring, lockdown).
 superstate(error_diagnosis, error_rcv).
 superstate(error_diagnosis, applicable_rescue).
 superstate(error_diagnosis, reset_module_data).
@@ -87,7 +87,7 @@ transition(senchk, tchk, senok, null, null).
 transition(tchk, psichk, t_ok, null, null).
 transition(psichk, ready, psi_ok, null, null).
 
-%% Transitons within monitor
+%% Transitons within monitoring
 transition(monidle, regulate_environment, no_contagion, null, null).
 transition(monidle, lockdown, contagion_alert, null, 'broadcast FACILITY_CRIT_MESG and lockdown = true').
 transition(regulate_environment, monidle, after_100ms, null, null).
