@@ -1,5 +1,3 @@
-%% ** MUST SEPERATE THIS FILE INTO FACTS AND RULES FILES
-
 %% Top level states
 
 state(init).
