@@ -43,6 +43,11 @@ final(lock_exit, lockdown).
 final(err_exit, error_diagnosis).
 
 %% Superstates
+superstate(null, init).
+superstate(null, idle).
+superstate(null, monitoring).
+superstate(null, error_diagnosis).
+superstate(null, safe_shutdown).
 superstate(init, boot_hw).
 superstate(init, senchk).
 superstate(init, tchk).
