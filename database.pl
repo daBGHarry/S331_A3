@@ -2,7 +2,7 @@
 
 state(init).
 state(idle).
-state(monitor).
+state(monitoring).
 state(error_diagnosis).
 state(safe_shutdown).
 
@@ -13,7 +13,7 @@ state(tchk).
 state(psichk).
 state(ready).
 
-%% States under monitor state
+%% States under monitoring state
 state(monidle).
 state(regulate_environment).
 state(lockdown).
@@ -33,7 +33,7 @@ state(safe_status).
 %% Initial states
 initial_state(dormant, null).
 initial_state(boot_hw, init).
-initial_state(monidle, monitor).
+initial_state(monidle, monitoring).
 initial_state(error_rcv, error_diagnosis).
 initial_state(prep_vpurge, lockdown).
 
@@ -45,7 +45,7 @@ final(err_exit, error_diagnosis).
 %% Superstates
 superstate(null, init).
 superstate(null, idle).
-superstate(null, monitor).
+superstate(null, monitoring).
 superstate(null, error_diagnosis).
 superstate(null, safe_shutdown).
 superstate(init, boot_hw).
@@ -53,9 +53,9 @@ superstate(init, senchk).
 superstate(init, tchk).
 superstate(init, psichk).
 superstate(init, ready).
-superstate(monitor, monidle).
-superstate(monitor, regulate_environment).
-superstate(monitor, lockdown).
+superstate(monitoring, monidle).
+superstate(monitoring, regulate_environment).
+superstate(monitoring, lockdown).
 superstate(error_diagnosis, error_rcv).
 superstate(error_diagnosis, applicable_rescue).
 superstate(error_diagnosis, reset_module_data).
@@ -72,12 +72,12 @@ transition(dormant, exit, kill, null, null).
 transition(dormant, init, start, null, 'system boot and load drivers').
 transition(init, idle, init_ok, null, null).
 transition(init, error_diagnosis, init_crash, null, 'broadcast init_err_msg').
-transition(idle, monitor, begin_monitoring, null, null).
+transition(idle, monitoring, begin_monitoring, null, null).
 transition(idle, error_diagnosis, idle_crash, null, 'broadcast idle_err_msg').
-transition(monitor, error_diagnosis, monitor_crash, not(inlockdown), 'broadcast idle_err_msg').
+transition(monitoring, error_diagnosis, monitor_crash, not(inlockdown), 'broadcast idle_err_msg').
 transition(error_diagnosis, init, retry_init, 'retry < 3', 'retry++').
 transition(error_diagnosis, idle, idle_rescue, null, null).
-transition(error_diagnosis, monitor, moni_rescue, null, null).
+transition(error_diagnosis, monitoring, moni_rescue, null, null).
 transition(error_diagnosis, safe_shutdown, shutdown, 'retry >= 3', 'system clean up').
 transition(safe_shutdown,dormant,sleep,null,null).
 
@@ -87,7 +87,7 @@ transition(senchk, tchk, senok, null, null).
 transition(tchk, psichk, t_ok, null, null).
 transition(psichk, ready, psi_ok, null, null).
 
-%% Transitons within monitor
+%% Transitons within monitoring
 transition(monidle, regulate_environment, no_contagion, null, null).
 transition(monidle, lockdown, contagion_alert, null, 'broadcast FACILITY_CRIT_MESG and lockdown = true').
 transition(regulate_environment, monidle, after_100ms, null, null).
