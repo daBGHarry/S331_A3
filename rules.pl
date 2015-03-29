@@ -12,7 +12,7 @@ all_loops(Set):- findall([Event, Guard], is_loop(Event, Guard), List), list_to_s
 is_edge(Event, Guard):- transition(_, _, Event, Guard,_).
 
 %% 4. size(Length) succeeds by returning the size of the entire EFSM (given by the number of its edges).
-size(Length) :- findall([Event, Guard], is_edge(Event, Guard), List), length(List).
+size(Length) :- findall([Event, Guard], is_edge(Event, Guard), List), length(List,Length).
 
 %% 5. is_link(Event, Guard) succeeds by finding a link edge.
 is_link(Event, Guard) :- transition(_, _, Event, Guard, _).
