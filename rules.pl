@@ -9,13 +9,13 @@ is_loop(Event,Guard):- transition(X, X, Event, Guard,_).
 all_loops(Set):- findall([Event, Guard], is_loop(Event, Guard), List), list_to_set(List, Set).
 
 %% 3. is_edge(Event, Guard) succeeds by finding an edge.
-is_edge(Event, Guard):- transition(_, _, Event, Guard,_).
+is_edge(Event, Guard):- transition(_,_, Event, Guard,_).
 
 %% 4. size(Length) succeeds by returning the size of the entire EFSM (given by the number of its edges).
 size(Length) :- findall([Event, Guard], is_edge(Event, Guard), List), length(List,Length).
 
 %% 5. is_link(Event, Guard) succeeds by finding a link edge.
-is_link(Event, Guard) :- transition(_, _, Event, Guard, _).
+is_link(Event, Guard) :- transition(Y, X, Event, Guard, _), not(Y==X).
 
 %% 6. Rule all superstates(Set) succeeds by ﬁnding all superstates in the EFSM.
 all_superstates(Set) :- findall(States, (state(States), superstate(States, _)), List), list_to_set(List, Set).
