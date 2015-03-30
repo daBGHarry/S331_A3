@@ -104,7 +104,7 @@ transition(safe_status, exit, null, null, null).
 
 %% Transitions within error_diagnosis
 transition(error_rcv, applicable_rescue, null, err_protocol_def, null).
-transition(error_rcv, reset_module_data, null, no err_protocol_def, null).
+transition(error_rcv, reset_module_data, null, not(err_protocol_def), null).
 transition(applicable_rescue, exit, apply_protocol_rescues, null, null).
 transition(reset_module_data, exit, reset_to_stable, null, null).
 
