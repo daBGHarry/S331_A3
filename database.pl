@@ -69,7 +69,7 @@ superstate(lockdown, safe_status).
 
 %% Transitions within top level
 transition(dormant, exit, kill, null, null).
-transition(dormant, init, start, null, 'system boot and load drivers').
+transition(dormant, init, start, null,null).
 transition(init, idle, init_ok, null, null).
 transition(init, error_diagnosis, init_crash, null, 'broadcast init_err_msg').
 transition(idle, monitoring, begin_monitoring, null, null).
@@ -89,7 +89,7 @@ transition(psichk, ready, psi_ok, null, null).
 
 %% Transitons within monitoring
 transition(monidle, regulate_environment, no_contagion, null, null).
-transition(monidle, lockdown, contagion_alert, null, 'broadcast FACILITY_CRIT_MESG and lockdown = true').
+transition(monidle, lockdown, contagion_alert, null, 'broadcast FACILITY_CRIT_MESG; lockdown = true').
 transition(regulate_environment, monidle, after_100ms, null, null).
 transition(lockdown, monidle, purge_succ, null, 'lockdown = false').
 
@@ -107,6 +107,4 @@ transition(error_rcv, applicable_rescue, null, err_protocol_def, null).
 transition(error_rcv, reset_module_data, null, not(err_protocol_def), null).
 transition(applicable_rescue, exit, apply_protocol_rescues, null, null).
 transition(reset_module_data, exit, reset_to_stable, null, null).
-
-
 
