@@ -1,5 +1,13 @@
-%% Top level states
+%% Assignment 3 - SOEN 331 Section U-UB
+%% By Harrison Ianatchkov ID: 26607403 and Justin Yip ID: 27032870
+%% Due March 30, 2015
 
+%% =============================================================================
+%%                                Database
+%% =============================================================================
+
+
+%% Top level states
 state(init).
 state(idle).
 state(monitoring).
